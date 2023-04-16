@@ -1,1 +1,1 @@
-## Student management system with the database
+## Student management system with the database - gui
