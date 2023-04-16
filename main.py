@@ -31,6 +31,7 @@ class MainWindow(QMainWindow):
         about_action = QAction("About", self)
         help_menu_item.addAction(about_action)
         about_action.setMenuRole(QAction.MenuRole.NoRole)
+        about_action.triggered.connect(self.about)
 
         self.table = QTableWidget()
         self.table.setColumnCount(4)
@@ -84,8 +85,8 @@ class MainWindow(QMainWindow):
 
     @staticmethod
     def search():
-        search = SearchDialog()
-        search.exec()
+        dialog = SearchDialog()
+        dialog.exec()
 
     @staticmethod
     def edit():
@@ -96,6 +97,23 @@ class MainWindow(QMainWindow):
     def delete():
         dialog = DeleteDialog()
         dialog.exec()
+
+    @staticmethod
+    def about():
+        dialog = AboutDialog()
+        dialog.exec()
+
+
+class AboutDialog(QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("About")
+        content = """
+        This application was created during the course 
+        "The Python Mega Course"
+        Feel free to modify and reuse this application.
+        """
+        self.setText(content)
 
 
 class EditDialog(QDialog):
