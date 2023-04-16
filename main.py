@@ -3,7 +3,7 @@ import sqlite3
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QLabel, QWidget, QGridLayout, \
     QLineEdit, QPushButton, QMainWindow, QTableWidget, QTableWidgetItem, \
-    QDialog, QVBoxLayout, QComboBox, QToolBar
+    QDialog, QVBoxLayout, QComboBox, QToolBar, QStatusBar
 
 from PyQt6.QtGui import QAction, QIcon
 import sys
@@ -38,11 +38,34 @@ class MainWindow(QMainWindow):
         self.table.verticalHeader().setVisible(False)
         self.setCentralWidget(self.table)
 
+        # Create toolbar and add toolbar elements
         toolbar = QToolBar()
         toolbar.setMovable(True)
         self.addToolBar(toolbar)
         toolbar.addAction(add_student_action)
         toolbar.addAction(search_item)
+
+        # Create statusbar and add statusbar elements
+        self.statusbar = QStatusBar()
+        self.setStatusBar(self.statusbar)
+
+        # Detect a cell click
+        self.table.cellClicked.connect(self.cell_clicked)
+
+    def cell_clicked(self):
+        edit_button = QPushButton("Edit record")
+        edit_button.clicked.connect(self.edit)
+
+        delete_button = QPushButton("Delete record")
+        delete_button.clicked.connect(self.delete)
+
+        children = self.findChildren(QPushButton)
+        if children:
+            for child in children:
+                self.statusbar.removeWidget(child)
+
+        self.statusbar.addWidget(edit_button)
+        self.statusbar.addWidget(delete_button)
 
     def load_data(self):
         connection = sqlite3.connect("database.db")
@@ -54,7 +77,8 @@ class MainWindow(QMainWindow):
                 self.table.setItem(row_num, col_num, QTableWidgetItem(str(data)))
         connection.close()
 
-    def insert(self):
+    @staticmethod
+    def insert():
         dialog = InsertDialog()
         dialog.exec()
 
@@ -62,6 +86,24 @@ class MainWindow(QMainWindow):
     def search():
         search = SearchDialog()
         search.exec()
+
+    @staticmethod
+    def edit():
+        dialog = EditDialog()
+        dialog.exec()
+
+    @staticmethod
+    def delete():
+        dialog = DeleteDialog()
+        dialog.exec()
+
+
+class EditDialog(QDialog):
+    pass
+
+
+class DeleteDialog(QDialog):
+    pass
 
 
 class InsertDialog(QDialog):
